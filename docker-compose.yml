@@ -1,0 +1,123 @@
+services:
+
+  # ---------------------------------------------------------------------------
+  # Aplicação principal (PHP + Vite dev server)
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    restart: unless-stopped
+    ports:
+      - '${APP_PORT:-8080}:8000'    # Laravel  (host:container)
+      - '${VITE_PORT:-5173}:5173'   # Vite HMR (host:container)
+    volumes:
+      - .:/var/www/html
+      # Volumes nomeados: preservam deps instaladas na imagem e cache Docker-específico
+      # (não são sobrescritos pelo bind mount acima e não afetam o host)
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+      - bootstrap_cache:/var/www/html/bootstrap/cache
+    environment:
+      APP_ENV: local
+      APP_URL: http://localhost:${APP_PORT:-8080}
+      VITE_APP_NAME: TSAdmin
+      VITE_PORT: ${VITE_PORT:-5173}    # forwarded so vite.config.js sets hmr.clientPort correctly
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-ts_admin}
+      DB_USERNAME: ${DB_USERNAME:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-admin}
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      SESSION_DRIVER: database
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - tsadmin
+
+  # ---------------------------------------------------------------------------
+  # Worker de filas (mesmo target da aplicação, só muda o comando)
+  # ---------------------------------------------------------------------------
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    restart: unless-stopped
+    command: php artisan queue:listen --tries=1 --timeout=90
+    volumes:
+      - .:/var/www/html
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+      - bootstrap_cache:/var/www/html/bootstrap/cache
+    environment:
+      APP_ENV: local
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-ts_admin}
+      DB_USERNAME: ${DB_USERNAME:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-admin}
+      QUEUE_CONNECTION: database
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - tsadmin
+
+  # ---------------------------------------------------------------------------
+  # Banco de dados PostgreSQL
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-ts_admin}
+      POSTGRES_USER: ${DB_USERNAME:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-admin} -d ${DB_DATABASE:-ts_admin}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - tsadmin
+
+  # ---------------------------------------------------------------------------
+  # Mailpit — interface web para testes de e-mail
+  # ---------------------------------------------------------------------------
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - '8025:8025'   # Web UI: http://localhost:8025
+      - '1025:1025'   # SMTP
+    environment:
+      - MAILPIT_WEB_PATH=/
+    networks:
+      - tsadmin
+
+volumes:
+  db-data:
+    name: ts_admin_db_data
+  vendor:
+  node_modules:
+  bootstrap_cache:
+
+networks:
+  tsadmin:
+    driver: bridge

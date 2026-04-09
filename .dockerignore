@@ -1,0 +1,46 @@
+# Dependências (serão instaladas na imagem)
+vendor/
+node_modules/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Ambiente (nunca empacotar segredos)
+.env
+.env.*
+!.env.example
+
+# Arquivos de desenvolvimento local
+.editorconfig
+.phpunit.result.cache
+phpunit.xml
+phpunit.xml.dist
+
+# Logs e cache locais
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*.php
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Docker (evita loop)
+docker-compose*.yml
+
+# Testes
+tests/
+
+# Assets do Node (serão buildados no stage node-builder)
+public/build/
+public/hot

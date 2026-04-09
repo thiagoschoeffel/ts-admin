@@ -1,0 +1,49 @@
+# Laravel framework defaults
+/vendor/
+/node_modules/
+/public/hot
+/public/storage
+/storage/*.key
+/storage/app/public
+/storage/framework/cache/*.php
+/storage/framework/cache/data
+/storage/framework/sessions
+/storage/framework/testing
+/storage/framework/views
+/bootstrap/cache/*.php
+.env
+.env.*
+!.env.example
+.env.backup
+.phpunit.result.cache
+/.env.local
+/.env.production
+/.env.staging
+Homestead.yaml
+Homestead.json
+.npmrc
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Frontend build artifacts
+/public/build
+
+# Ziggy route file — auto-generated per environment, must not be committed
+resources/js/ziggy.js
+
+# Ignore untracked heroicons sets we don't use
+resources/svg/heroicons/mini/
+resources/svg/heroicons/solid/
+
+# Coverage reports
+coverage/
+coverage-unit/
+coverage-user/
+reports/
