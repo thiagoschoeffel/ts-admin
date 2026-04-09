@@ -1,374 +1,374 @@
 # TSAdmin
 
-Sistema web para gestão industrial e comercial de EPS (poliestireno expandido). Controla produção (blocos e moldados), expedição, estoque, matéria-prima, silos, apontamentos, paradas de máquina, CRM de clientes/leads/oportunidades, pedidos com exportação em PDF e gerenciamento de usuários com permissões granulares.
+Web-based system for industrial and commercial management of EPS (expanded polystyrene). Controls production (blocks and molded parts), shipping, inventory, raw materials, silos, records, machine downtime, CRM for clients/leads/opportunities, orders with PDF export, and user management with granular permissions.
 
 <img width="1885" height="863" alt="image" src="https://github.com/user-attachments/assets/5065fa10-f91f-465e-9b67-368de035b911" />
 
 ## 🚀 Stack
 
-| Camada | Tecnologia |
-|---|---|
-| Backend | PHP 8.4, Laravel 12 |
-| Frontend | Vue 3, Inertia.js, Tailwind CSS 4 |
-| Banco de dados | PostgreSQL 16 |
-| Build | Vite 7, Ziggy (rotas no JS) |
-| Charts | ApexCharts |
-| PDF | DomPDF |
-| E-mail (dev) | Mailpit |
-| Containerização | Docker & Docker Compose |
+| Layer           | Technology         |
+|-----------------|--------------------|
+| Backend         | PHP 8.4, Laravel 12 |
+| Frontend        | Vue 3, Inertia.js, Tailwind CSS 4 |
+| Database        | PostgreSQL 16      |
+| Build Tools     | Vite 7, Ziggy (JS routes) |
+| Charts          | ApexCharts         |
+| PDF Generation  | DomPDF             |
+| Email (dev)     | Mailpit            |
+| Containerization| Docker & Docker Compose |
 
-## ✨ Funcionalidades
+## ✨ Features
 
-- **Dashboard** com gráficos de produção, estoque e indicadores em tempo real
-- **CRM** — Leads, interações e pipeline de oportunidades
-- **Clientes** com endereços múltiplos
-- **Pedidos** com itens, controle de status e exportação em PDF
-- **Produtos** com componentes (lista técnica)
-- **Produção** — Apontamentos, blocos e moldados
-- **Expedição** — Saída de blocos e moldados por cliente
-- **Estoque** — Movimentações, reservas, silos e matéria-prima
-- **Infraestrutura** — Máquinas, operadores, setores, paradas com motivo
-- **Usuários** com papéis (`admin` / `user`) e permissões granulares por recurso
-- Verificação de e-mail e redefinição de senha
+- **Dashboard** with production, inventory, and real-time indicator charts
+- **CRM** — Leads, interactions, and opportunity pipeline
+- **Clients** with multiple addresses
+- **Orders** with items, status control, and PDF export
+- **Products** with components (technical list)
+- **Production** — Records, blocks, and molded parts
+- **Shipping** — Dispatch of blocks and molded parts by client
+- **Inventory** — Movements, reservations, silos, and raw materials
+- **Infrastructure** — Machines, operators, sectors, reasons for downtimes
+- **Users** with roles (`admin` / `user`) and granular permissions by resource
+- Email verification and password reset
 
 ---
 
-## 📦 Rodando com Docker *(recomendado)*
+## 📦 Running with Docker *(recommended)*
 
-### Pré-requisitos
+### Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) ≥ 24
 - [Docker Compose](https://docs.docker.com/compose/) v2
 
-### Passos
+### Steps
 
 ```bash
-# 1. Clonar e entrar na pasta
-git clone <url-do-repositorio>
+# 1. Clone and enter the directory
+git clone <repository-url>
 cd tsadmin
 
-# 2. Copiar o arquivo de ambiente
+# 2. Copy the environment file
 cp .env.example .env
 
-# 3. Subir todos os serviços (na 1ª vez faz o build automaticamente)
+# 3. Start all services (first run builds automatically)
 docker compose up -d --build
 ```
 
-Na inicialização, o container executa automaticamente:
-- Aguarda o banco de dados estar disponível
-- Gera `APP_KEY` se estiver vazio no `.env`
-- Roda `php artisan migrate`
-- Cria os usuários base (`admin@example.com` e `user@example.com`) via seed idempotente
-- Gera as rotas Ziggy para o frontend
-- Cacheia config/rotas no volume Docker (não afeta arquivos do host)
-- Inicia o servidor PHP e o Vite dev server com HMR
+On initialization, the container automatically:
+- Waits for the database to be available
+- Generates `APP_KEY` if empty in `.env`
+- Runs `php artisan migrate`
+- Creates default users (`admin@example.com` and `user@example.com`) via idempotent seeders
+- Generates Ziggy routes for the frontend
+- Caches config/routes in the Docker volume (does not affect host files)
+- Starts the PHP server and Vite dev server with HMR
 
-Quando subir, acesse:
+Once up, access:
 
-| Serviço | URL |
-|---|---|
-| Aplicação | [http://localhost:8080](http://localhost:8080) |
-| Vite HMR | [http://localhost:5173](http://localhost:5173) |
-| Mailpit (e-mails) | [http://localhost:8025](http://localhost:8025) |
-| PostgreSQL | `localhost:5432` |
+| Service          | URL                         |
+|------------------|-----------------------------|
+| Application      | [http://localhost:8080](http://localhost:8080) |
+| Vite HMR         | [http://localhost:5173](http://localhost:5173) |
+| Mailpit (emails) | [http://localhost:8025](http://localhost:8025) |
+| PostgreSQL       | `localhost:5432`           |
 
-> **Nota:** Se a porta `8080` estiver ocupada, suba com `APP_PORT=9090 docker compose up`.
+> **Note:** If port `8080` is occupied, use `APP_PORT=9090 docker compose up`.
 
-### Usuários padrão
+### Default Users
 
-Os usuários abaixo são criados automaticamente na primeira inicialização (e garantidos em todo restart via `updateOrCreate`):
+The following users are automatically created on the first initialization (and ensured on every restart via `updateOrCreate`):
 
-| E-mail | Senha | Papel |
-|---|---|---|
+| Email               | Password   | Role  |
+|---------------------|------------|-------|
 | `admin@example.com` | `password` | admin |
-| `user@example.com` | `password` | user |
+| `user@example.com`  | `password` | user  |
 
-### Popular com dados de demonstração
+### Populate with demo data
 
 ```bash
-# Seed de demonstração (todos os recursos com dados fictícios)
-# ⚠️ Trunca e recria todos os dados — use apenas em desenvolvimento
+# Demo seeder (all resources with fictitious data)
+# ⚠️ Truncates and recreates all data — use only in development
 docker compose exec app php artisan db:seed --class=DemoSeeder
 ```
 
-### Comandos úteis no Docker
+### Useful Docker Commands
 
 ```bash
-# Ver logs em tempo real
+# View real-time logs
 docker compose logs -f app
 
-# Acessar o shell do container
+# Access the container shell
 docker compose exec app bash
 
-# Rodar artisan dentro do container
-docker compose exec app php artisan <comando>
+# Run artisan commands inside the container
+docker compose exec app php artisan <command>
 
-# Rodar os testes
+# Run tests
 docker compose exec app php artisan test
 
-# Parar os serviços
+# Stop services
 docker compose stop
 
-# Subir novamente (sem rebuild)
+# Restart (no rebuild)
 docker compose up -d
 
-# Derrubar tudo (containers + rede; volumes de dados são preservados)
+# Shutdown (containers + network; data volumes are preserved)
 docker compose down
 
-# Derrubar e remover TODOS os volumes (⚠️ apaga o banco de dados)
+# Shutdown and remove ALL volumes (⚠️ deletes database)
 docker compose down -v
 ```
 
-### Reconstruir após mudanças no Dockerfile
+### Rebuild after Dockerfile changes
 
 ```bash
 docker compose build app
 docker compose up -d
 ```
 
-### Estrutura dos serviços Docker
+### Docker Service Structure
 
 ```
 docker-compose.yml
 ├── app      → Laravel + Vite dev server  (PHP 8.4, Node 22)
-├── queue    → Worker de filas            (mesmo Dockerfile, target: development)
+├── queue    → Queue worker               (same Dockerfile, development target)
 ├── db       → PostgreSQL 16 Alpine
-└── mailpit  → SMTP + interface web para e-mails de teste
+└── mailpit  → SMTP + web interface for test emails
 ```
 
-**Volumes nomeados:**
+**Named volumes:**
 
-| Volume | Montado em | Finalidade |
-|---|---|---|
-| `vendor` | `/var/www/html/vendor` | Deps PHP (isoladas do host) |
-| `node_modules` | `/var/www/html/node_modules` | Deps Node (isoladas do host) |
-| `bootstrap_cache` | `/var/www/html/bootstrap/cache` | Cache Docker (não afeta o host) |
-| `db-data` | dados do PostgreSQL | Persistência do banco |
+| Volume            | Mounted at                    | Purpose                   |
+|-------------------|-------------------------------|---------------------------|
+| `vendor`          | `/var/www/html/vendor`        | PHP dependencies (host-independent) |
+| `node_modules`    | `/var/www/html/node_modules`  | Node dependencies (host-independent) |
+| `bootstrap_cache` | `/var/www/html/bootstrap/cache` | Docker cache (does not affect host) |
+| `db-data`         | PostgreSQL data              | Database persistence       |
 
 ---
 
-## 🖥️ Rodando sem Docker (ambiente local)
+## 🖥️ Running without Docker (local environment)
 
-### Pré-requisitos
+### Prerequisites
 
-- PHP ≥ 8.4 com extensões: `pdo_pgsql`, `mbstring`, `gd`, `zip`, `intl`, `bcmath`, `pcntl`, `exif`, `dom`
+- PHP ≥ 8.4 with extensions: `pdo_pgsql`, `mbstring`, `gd`, `zip`, `intl`, `bcmath`, `pcntl`, `exif`, `dom`
 - [Composer](https://getcomposer.org/) ≥ 2
 - [Node.js](https://nodejs.org/) ≥ 18 + npm
 - PostgreSQL ≥ 14
 
-### Instalação
+### Installation
 
 ```bash
-# 1. Clonar o repositório
-git clone <url-do-repositorio>
+# 1. Clone the repository
+git clone <repository-url>
 cd tsadmin
 
-# 2. Instalar dependências PHP
+# 2. Install PHP dependencies
 composer install
 
-# 3. Instalar dependências Node
+# 3. Install Node dependencies
 npm install
 
-# 4. Configurar ambiente
+# 4. Configure the environment
 cp .env.example .env
 php artisan key:generate
 
-# 5. Ajustar banco de dados no .env
+# 5. Configure the database in your .env file
 # DB_HOST=127.0.0.1
 # DB_DATABASE=ts_admin
-# DB_USERNAME=seu_usuario
-# DB_PASSWORD=sua_senha
+# DB_USERNAME=your_user
+# DB_PASSWORD=your_password
 
-# 6. Criar as tabelas
+# 6. Create the tables
 php artisan migrate
 
-# 7. (Opcional) Popular com dados de exemplo
+# 7. (Optional) Populate with example data
 php artisan db:seed --class=DemoSeeder
 ```
 
-### Iniciar o ambiente de desenvolvimento
+### Start the development environment
 
 ```bash
-# Inicia todos os processos juntos (servidor, queue, logs e Vite)
+# Start all processes together (server, queue, logs, and Vite server)
 composer run dev
 ```
 
-Ou separadamente em terminais distintos:
+Or start them separately in different terminals:
 
 ```bash
-# Terminal 1 — Servidor PHP
+# Terminal 1 — PHP server
 php artisan serve
 
-# Terminal 2 — Worker de filas
+# Terminal 2 — Queue worker
 php artisan queue:listen --tries=1
 
 # Terminal 3 — Vite (assets + HMR)
 npm run dev
 
-# Terminal 4 — Logs em tempo real (opcional)
+# Terminal 4 — Real-time logs (optional)
 php artisan pail
 ```
 
 ---
 
-## 🔧 Variáveis de Ambiente
+## 🔧 Environment Variables
 
-Copie `.env.example` para `.env` e ajuste conforme o ambiente. As variáveis mais relevantes estão descritas abaixo.
+Copy `.env.example` to `.env` and adjust according to your environment. Key variables are described below.
 
-### Aplicação
+### Application
 
-| Variável | Padrão | Descrição |
-|---|---|---|
-| `APP_NAME` | `TSAdmin` | Nome da aplicação |
-| `APP_ENV` | `local` | Ambiente (`local`, `production`, `testing`) |
-| `APP_KEY` | *(vazio)* | Chave de criptografia — gerar com `php artisan key:generate` |
-| `APP_DEBUG` | `true` | Habilita debug e stack traces detalhados |
-| `APP_URL` | `http://localhost` | URL base da aplicação |
-| `APP_LOCALE` | `pt_BR` | Localidade padrão |
+| Variable       | Default       | Description                           |
+|----------------|---------------|---------------------------------------|
+| `APP_NAME`     | `TSAdmin`     | Application name                      |
+| `APP_ENV`      | `local`       | Environment (`local`, `production`, `testing`) |
+| `APP_KEY`      | *(empty)*     | Encryption key — generate with `php artisan key:generate` |
+| `APP_DEBUG`    | `true`        | Enables debug and detailed stack traces |
+| `APP_URL`      | `http://localhost` | Base URL for the application         |
+| `APP_LOCALE`   | `pt_BR`       | Default locale                        |
 
-### Banco de dados
+### Database
 
-| Variável | Padrão | Descrição |
-|---|---|---|
-| `DB_CONNECTION` | `pgsql` | Driver do banco |
-| `DB_HOST` | `db` | Host do PostgreSQL (Docker: `db`; local: `127.0.0.1`) |
-| `DB_PORT` | `5432` | Porta |
-| `DB_DATABASE` | `ts_admin` | Nome do banco |
-| `DB_USERNAME` | `admin` | Usuário |
-| `DB_PASSWORD` | *(vazio)* | Senha — definir no `.env` |
+| Variable       | Default       | Description                           |
+|----------------|---------------|---------------------------------------|
+| `DB_CONNECTION`| `pgsql`       | Database driver                       |
+| `DB_HOST`      | `db`          | PostgreSQL host (Docker: `db`; local: `127.0.0.1`) |
+| `DB_PORT`      | `5432`        | Port                                  |
+| `DB_DATABASE`  | `ts_admin`    | Database name                         |
+| `DB_USERNAME`  | `admin`       | User                                  |
+| `DB_PASSWORD`  | *(empty)*     | Password — set in `.env`              |
 
-### Cache, sessão e filas
+### Cache, Sessions, and Queues
 
-| Variável | Padrão | Descrição |
-|---|---|---|
-| `CACHE_STORE` | `database` | Driver de cache (`database`, `redis`, `file`) |
-| `SESSION_DRIVER` | `database` | Driver de sessão (`database`, `redis`, `cookie`) |
-| `SESSION_LIFETIME` | `120` | Duração da sessão em minutos |
-| `QUEUE_CONNECTION` | `database` | Driver de filas (`database`, `redis`, `sync`) |
+| Variable        | Default       | Description                           |
+|-----------------|---------------|---------------------------------------|
+| `CACHE_STORE`   | `database`    | Cache driver (`database`, `redis`, `file`) |
+| `SESSION_DRIVER`| `database`    | Session driver (`database`, `redis`, `cookie`) |
+| `SESSION_LIFETIME` | `120`      | Session duration in minutes           |
+| `QUEUE_CONNECTION` | `database` | Queue driver (`database`, `redis`, `sync`) |
 
-### E-mail
+### Email
 
-| Variável | Padrão | Descrição |
-|---|---|---|
-| `MAIL_MAILER` | `smtp` | Driver de e-mail |
-| `MAIL_HOST` | `mailpit` | Servidor SMTP (Docker: `mailpit`; local: `127.0.0.1`) |
-| `MAIL_PORT` | `1025` | Porta SMTP |
-| `MAIL_FROM_ADDRESS` | `no-reply@ts-admin.local` | Endereço remetente padrão |
-| `MAIL_FROM_NAME` | `${APP_NAME}` | Nome do remetente |
+| Variable        | Default         | Description                           |
+|-----------------|-----------------|---------------------------------------|
+| `MAIL_MAILER`   | `smtp`          | Email driver                          |
+| `MAIL_HOST`     | `mailpit`       | SMTP server (Docker: `mailpit`; local: `127.0.0.1`) |
+| `MAIL_PORT`     | `1025`          | SMTP port                             |
+| `MAIL_FROM_ADDRESS` | `no-reply@ts-admin.local` | Default sender address      |
+| `MAIL_FROM_NAME`| `${APP_NAME}`   | Default sender name                   |
 
 ---
 
-## 🧪 Testes
+## 🧪 Tests
 
 ```bash
-# Rodar todos os testes
+# Run all tests
 php artisan test
 
-# Com resumo de cobertura de código
+# With code coverage summary
 php artisan test --coverage
 
-# Suite específica
+# Specific suite
 php artisan test --testsuite=Unit
 php artisan test --testsuite=Feature
 
-# Filtrar por nome do teste
-php artisan test --filter NomeDoTeste
+# Filter by test name
+php artisan test --filter TestName
 
 # Via Docker
 docker compose exec app php artisan test
 ```
 
-Os testes utilizam SQLite em memória (configurado no `phpunit.xml`) — não é necessário banco separado para a suíte de testes.
+Tests use in-memory SQLite (configured in `phpunit.xml`) — no separate database is required for the test suite.
 
-**O que está coberto:**
+**What is covered:**
 
-- Modelos: User, Client, Address, Product, Order, OrderItem, ProductComponent
+- Models: User, Client, Address, Product, Order, OrderItem, ProductComponent
 - Controllers: ClientController, ProductController
 - Form Requests: StoreClientRequest, UpdateClientRequest
-- Policies: Client, User, Product, Order, Address e demais
+- Policies: Client, User, Product, Order, Address and others
 - Middlewares: Authenticate, HandleInertiaRequests
-- Notificações: VerifyEmailNotification
+- Notifications: VerifyEmailNotification
 
 ---
 
-## 🔐 Usuários e Permissões
+## 🔐 Users and Permissions
 
-### Papéis (roles)
+### Roles
 
-| Papel | Acesso |
-|---|---|
-| `admin` | Acesso total a todos os recursos, sem restrições |
-| `user` | Acesso restrito pelas permissões definidas individualmente |
+| Role   | Access                         |
+|--------|---------------------------------|
+| `admin`| Full access to all resources    |
+| `user` | Restricted access by permissions |
 
-### Permissões granulares
+### Granular Permissions
 
-Usuários com papel `user` possuem permissões configuradas individualmente por recurso. Cada recurso suporta as ações:
+Users with the `user` role have permissions configured individually per resource. Each resource supports the following actions:
 
-| Ação | Descrição |
-|---|---|
-| `view` | Visualizar listagens e registros individuais |
-| `create` | Criar novos registros |
-| `update` | Editar registros existentes |
-| `delete` | Excluir registros |
+| Action    | Description                   |
+|-----------|-------------------------------|
+| `view`    | View listings and individual records |
+| `create`  | Create new records            |
+| `update`  | Edit existing records         |
+| `delete`  | Delete records                |
 
-Recursos com ações extras:
+Resources with extra actions:
 - **orders**: `update_status`, `export_pdf`
 
-### Recursos gerenciáveis por permissão
+### Manageable Resources by Permission
 
-| Recurso | Descrição |
-|---|---|
-| `clients` | Clientes |
-| `products` | Produtos |
-| `orders` | Pedidos |
-| `leads` | Leads |
-| `opportunities` | Oportunidades |
-| `sectors` | Setores |
-| `raw_materials` | Matérias-primas |
-| `inventory_movements` | Movimentos de estoque |
-| `production_pointings` | Apontamentos de produção |
-| `block_productions` | Produções de blocos |
-| `molded_productions` | Produções moldadas |
-| `block_dispatches` | Saídas de blocos |
-| `molded_dispatches` | Saídas de moldados |
-| `silos` | Silos |
-| `block_types` | Tipos de blocos |
-| `almoxarifados` | Almoxarifados |
-| `machines` | Máquinas |
-| `operators` | Operadores |
-| `reason_types` | Tipos de motivo |
-| `reasons` | Motivos |
-| `machine_downtimes` | Paradas de máquina |
+| Resource             | Description                              |
+|----------------------|------------------------------------------|
+| `clients`            | Clients                                 |
+| `products`           | Products                                |
+| `orders`             | Orders                                  |
+| `leads`              | Leads                                   |
+| `opportunities`      | Opportunities                           |
+| `sectors`            | Sectors                                 |
+| `raw_materials`      | Raw materials                           |
+| `inventory_movements`| Inventory movements                     |
+| `production_pointings` | Production records                     |
+| `block_productions`  | Block productions                       |
+| `molded_productions` | Molded productions                      |
+| `block_dispatches`   | Block dispatches                        |
+| `molded_dispatches`  | Molded dispatches                       |
+| `silos`              | Silos                                   |
+| `block_types`        | Block types                             |
+| `almoxarifados`      | Warehouses                              |
+| `machines`           | Machines                                |
+| `operators`          | Operators                               |
+| `reason_types`       | Reason types                            |
+| `reasons`            | Reasons                                 |
+| `machine_downtimes`  | Machine downtimes                       |
 
-As permissões são verificadas via **Laravel Policies** registradas no `AuthServiceProvider`. Todos os controllers usam `$this->authorize()` para checar acesso antes de executar qualquer operação.
+Permissions are enforced via **Laravel Policies** registered in the `AuthServiceProvider`. All controllers use `$this->authorize()` to check access before performing operations.
 
 ---
 
-## 🚢 Deploy em Produção
+## 🚢 Production Deploy
 
-### 1. Build da imagem de produção
+### 1. Build the production image
 
 ```bash
 docker build --target production -t tsadmin:prod .
 ```
 
-A imagem de produção:
-- Não contém Node.js nem dependências de desenvolvimento
-- Inclui os assets compilados pelo Vite em `public/build/`
-- Executa automaticamente `config:cache`, `route:cache`, `view:cache` e `event:cache` na inicialização
+The production image:
+- Does not include Node.js or development dependencies
+- Includes assets compiled by Vite in `public/build/`
+- Automatically caches config, routes, and views on startup
 
-### 2. Variáveis obrigatórias em produção
+### 2. Required production variables
 
 ```bash
 APP_ENV=production
 APP_DEBUG=false
-APP_KEY=<gerar com: php artisan key:generate --show>
-APP_URL=https://seu-dominio.com
+APP_KEY=<generate with: php artisan key:generate --show>
+APP_URL=https://your-domain.com
 
-DB_HOST=<host-do-banco>
-DB_DATABASE=<nome-do-banco>
-DB_USERNAME=<usuario>
-DB_PASSWORD=<senha-forte>
+DB_HOST=<database-host>
+DB_DATABASE=<database-name>
+DB_USERNAME=<username>
+DB_PASSWORD=<strong-password>
 
 SESSION_DRIVER=database
 QUEUE_CONNECTION=database
@@ -376,13 +376,13 @@ QUEUE_CONNECTION=database
 MAIL_MAILER=smtp
 MAIL_HOST=<smtp-server>
 MAIL_PORT=587
-MAIL_USERNAME=<usuario-smtp>
-MAIL_PASSWORD=<senha-smtp>
-MAIL_FROM_ADDRESS=<remetente@dominio.com>
+MAIL_USERNAME=<smtp-username>
+MAIL_PASSWORD=<smtp-password>
+MAIL_FROM_ADDRESS=<sender@domain.com>
 MAIL_FROM_NAME=TSAdmin
 ```
 
-### 3. Exemplo de docker-compose para produção
+### 3. Example Docker Compose for production
 
 ```yaml
 services:
@@ -395,7 +395,7 @@ services:
       APP_ENV: production
       APP_DEBUG: false
       APP_KEY: ${APP_KEY}
-      APP_URL: https://seu-dominio.com
+      APP_URL: https://your-domain.com
       DB_HOST: db
       DB_DATABASE: ${DB_DATABASE:-ts_admin}
       DB_USERNAME: ${DB_USERNAME}
@@ -442,16 +442,16 @@ volumes:
   db-data:
 ```
 
-### 4. Primeiro deploy
+### 4. First deploy
 
 ```bash
-# Migrações são executadas automaticamente na inicialização do container.
-# Seeders estão desabilitados em produção — crie o usuário admin manualmente:
+# Migrations are automatically executed at container startup.
+# Seeders are disabled in production — create the admin user manually:
 docker compose exec app php artisan tinker --execute="
   App\Models\User::create([
-    'name'              => 'Administrador',
-    'email'             => 'admin@seu-dominio.com',
-    'password'          => 'senha-forte-aqui',
+    'name'              => 'Administrator',
+    'email'             => 'admin@your-domain.com',
+    'password'          => 'strong-password-here',
     'role'              => 'admin',
     'status'            => 'active',
     'email_verified_at' => now(),
@@ -459,18 +459,18 @@ docker compose exec app php artisan tinker --execute="
 "
 ```
 
-### 5. Nginx como proxy reverso
+### 5. Nginx as a reverse proxy
 
 ```nginx
 server {
     listen 80;
-    server_name seu-dominio.com;
+    server_name your-domain.com;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name seu-dominio.com;
+    server_name your-domain.com;
 
     ssl_certificate     /etc/ssl/certs/cert.pem;
     ssl_certificate_key /etc/ssl/private/key.pem;
@@ -486,24 +486,24 @@ server {
 }
 ```
 
-### 6. Comandos pós-deploy
+### 6. Post-deploy commands
 
 ```bash
-# Atualizar sem downtime (após nova imagem)
+# Update without downtime (after new image)
 docker compose pull
 docker compose up -d --no-deps app queue
 
-# Rodar migrações de atualização
+# Run update migrations
 docker compose exec app php artisan migrate --force
 
-# Limpar e recriar caches manualmente (se necessário)
+# Manually clear and recreate caches if needed
 docker compose exec app php artisan optimize:clear
 docker compose exec app php artisan optimize
 ```
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 tsadmin/
@@ -511,41 +511,41 @@ tsadmin/
 │   ├── Http/
 │   │   ├── Controllers/        # 34 controllers (Auth, Admin, Inventory, etc.)
 │   │   ├── Middleware/         # Authenticate, EnsureUserIsAdmin, CheckPolicy...
-│   │   └── Requests/           # Form requests com regras de validação
-│   ├── Models/                 # 31 modelos Eloquent
-│   ├── Policies/               # 24 policies de autorização por recurso
+│   │   └── Requests/           # Form requests with validation rules
+│   ├── Models/                 # 31 Eloquent models
+│   ├── Policies/               # 24 authorization policies by resource
 │   ├── Providers/              # AppServiceProvider, AuthServiceProvider
-│   └── Services/               # Serviços de lógica de negócio
+│   └── Services/               # Business logic services
 ├── config/
-│   ├── permissions.php         # Definição dos recursos e ações permitidas
+│   ├── permissions.php         # Resource and action definitions
 │   └── ...                     # database, cache, queue, mail, etc.
 ├── database/
 │   ├── migrations/             # 20+ migrations
 │   ├── seeders/                # 31 seeders (Base, Demo, Dev, Test)
-│   └── factories/              # Factories para testes
+│   └── factories/              # Factories for testing
 ├── docker/
-│   ├── entrypoint.dev.sh       # Script de inicialização (desenvolvimento)
-│   └── entrypoint.prod.sh      # Script de inicialização (produção)
-├── docs/                       # Documentação técnica dos módulos
-├── public/build/               # Assets compilados pelo Vite (gitignored)
+│   ├── entrypoint.dev.sh       # Development initialization script
+│   └── entrypoint.prod.sh      # Production initialization script
+├── docs/                       # Technical module documentation
+├── public/build/               # Compiled Vite assets (gitignored)
 ├── resources/
 │   ├── css/app.css             # Tailwind CSS
 │   └── js/
-│       ├── app.js              # Entrypoint principal
-│       ├── inertia.js          # Entrypoint Inertia.js
-│       ├── ziggy.js            # Rotas geradas — gitignored, recriado no boot
-│       ├── Components/         # Componentes Vue reutilizáveis
-│       ├── Layouts/            # Layouts da aplicação
-│       └── Pages/              # 76 páginas Vue organizadas por módulo
-│           ├── Auth/           # Login, registro, recuperação de senha
-│           ├── Admin/          # Dashboard e CRUD de todos os módulos
-│           └── Errors/         # Páginas de erro (403, 404, 419, 500)
+│       ├── app.js              # Main entrypoint
+│       ├── inertia.js          # Inertia.js entrypoint
+│       ├── ziggy.js            # Generated routes — gitignored, recreated at boot
+│       ├── Components/         # Reusable Vue components
+│       ├── Layouts/            # Application layouts
+│       └── Pages/              # 76 Vue pages organized by module
+│           ├── Auth/           # Login, registration, password recovery
+│           ├── Admin/          # Dashboard and CRUD for all modules
+│           └── Errors/         # Error pages (403, 404, 419, 500)
 ├── routes/
-│   └── web.php                 # Todas as rotas (guest + admin protegidas)
+│   └── web.php                 # All routes (guest + admin protected)
 ├── tests/
-│   ├── Feature/                # Testes de integração
-│   └── Unit/                   # Testes unitários
-├── .env.example                # Template de variáveis de ambiente
+│   ├── Feature/                # Integration tests
+│   └── Unit/                   # Unit tests
+├── .env.example                # Environment variable template
 ├── .dockerignore
 ├── Dockerfile                  # Multi-stage: base → development / production
 ├── docker-compose.yml          # app, queue, db, mailpit
@@ -557,57 +557,57 @@ tsadmin/
 
 ---
 
-## 🛠️ Referência de Comandos
+## 🛠️ Command Reference
 
 ### Composer
 
 ```bash
-composer run dev      # Inicia servidor, queue, logs e Vite (tudo junto)
-composer run test     # Limpa config cache e roda os testes
+composer run dev      # Starts server, queue, logs, and Vite (all together)
+composer run test     # Clears config cache and runs tests
 ```
 
 ### NPM
 
 ```bash
-npm run dev           # Gera rotas Ziggy + inicia Vite dev server
-npm run build         # Gera rotas Ziggy + build de produção
-npm run ziggy         # Apenas regenera resources/js/ziggy.js
-npm run icons         # Copia ícones Heroicons para o projeto
+npm run dev           # Generates Ziggy routes + starts Vite dev server
+npm run build         # Generates Ziggy routes + production build
+npm run ziggy         # Regenerates resources/js/ziggy.js only
+npm run icons         # Copies Heroicons to the project
 ```
 
 ### Artisan
 
 ```bash
-# Banco de dados
-php artisan migrate                          # Roda migrações pendentes
-php artisan migrate:fresh --seed             # Recria o banco do zero + seeds
-php artisan db:seed                          # Roda o DatabaseSeeder padrão
-php artisan db:seed --class=DemoSeeder       # Seed completo com dados fictícios
+# Database
+php artisan migrate                          # Run pending migrations
+php artisan migrate:fresh --seed             # Recreate the database from scratch + seeds
+php artisan db:seed                          # Run default DatabaseSeeder
+php artisan db:seed --class=DemoSeeder       # Full seed with demo data
 
 # Cache
-php artisan optimize                         # Cacheia config, rotas e views
-php artisan optimize:clear                   # Limpa todos os caches
-php artisan config:cache                     # Cacheia apenas configurações
-php artisan route:cache                      # Cacheia apenas rotas
+php artisan optimize                         # Cache config, routes, and views
+php artisan optimize:clear                   # Clear all caches
+php artisan config:cache                     # Cache configurations only
+php artisan route:cache                      # Cache routes only
 
-# Filas
-php artisan queue:listen --tries=1           # Worker de filas (dev)
-php artisan queue:work --tries=3             # Worker de filas (prod, sem reload)
-php artisan queue:failed                     # Lista jobs com falha
+# Queues
+php artisan queue:listen --tries=1           # Development queue worker
+php artisan queue:work --tries=3             # Production queue worker (no reload)
+php artisan queue:failed                     # View failed jobs
 
-# Utilitários
-php artisan ziggy:generate                   # Regenera rotas para o frontend
-php artisan tinker                           # REPL interativo
-php artisan pail                             # Logs em tempo real
-php artisan about                            # Informações do ambiente
+# Utilities
+php artisan ziggy:generate                   # Regenerate frontend routes
+php artisan tinker                           # Interactive REPL
+php artisan pail                             # Real-time logs
+php artisan about                            # Environment information
 ```
 
 ---
 
-## 📄 Licença
+## 📄 License
 
-**Sem licença (No license).**
+**No license.**
 
-Este repositório é disponibilizado apenas para **visualização**. **Não é permitido** usar, copiar, modificar ou distribuir o código sem autorização **por escrito** do autor.
+This repository is made available for **viewing only**. **Use, copying, modification, or distribution of the code** is not allowed without **written** authorization from the author.
 
-Todos os direitos reservados.
+All rights reserved.
