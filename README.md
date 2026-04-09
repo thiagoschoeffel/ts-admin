@@ -2,6 +2,8 @@
 
 Sistema web para gestão industrial e comercial de EPS (poliestireno expandido). Controla produção (blocos e moldados), expedição, estoque, matéria-prima, silos, apontamentos, paradas de máquina, CRM de clientes/leads/oportunidades, pedidos com exportação em PDF e gerenciamento de usuários com permissões granulares.
 
+<img width="1885" height="863" alt="image" src="https://github.com/user-attachments/assets/5065fa10-f91f-465e-9b67-368de035b911" />
+
 ## 🚀 Stack
 
 | Camada | Tecnologia |
